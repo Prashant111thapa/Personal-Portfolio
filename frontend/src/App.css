@@ -1,0 +1,21 @@
+::selection {
+  background: #f59e42;   /* your custom background color */
+  color: #fff;           /* your custom text color */
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a; /* Dark background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FD6F00; /* Your orange color */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff8c3a; /* Lighter orange on hover */
+}

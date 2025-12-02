@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: portfolio
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: prashant123
+      MYSQL_DATABASE: personal_portfolio
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql  # Persistent data volume
+    networks:
+      - portfolio_network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    networks:
+      - portfolio_network
+
+volumes:
+  mysql_data:  # Named volume for persistent data
+
+networks:
+  portfolio_network:
+    driver: bridge
