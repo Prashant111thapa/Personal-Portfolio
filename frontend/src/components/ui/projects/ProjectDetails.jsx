@@ -67,7 +67,7 @@ const ProjectDetails = () => {
       {/* Image and titles */}
       <div className='relative h-[60vh] overflow-hidden'>
         <motion.img 
-            src={`http://localhost:5000${project?.image_url}`}
+            src={project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : ''}
             alt={project?.title}
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}

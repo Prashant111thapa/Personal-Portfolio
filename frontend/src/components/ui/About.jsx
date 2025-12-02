@@ -55,7 +55,7 @@ const About = () => {
 
                   { profile?.avatar_url ? (
                     <img
-                      src={`http://localhost:5000${profile.avatar_url}`}
+                      src={profile.avatar_url.startsWith('http') ? profile.avatar_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profile.avatar_url}`}
                       alt={profile.name}
                       className='w-full h-full object-cover rounded-xl'
                     />

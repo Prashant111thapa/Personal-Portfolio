@@ -281,7 +281,7 @@ const handleInputChange = (e) => {
     if (project.image_url) {
         const imageUrl = project.image_url.startsWith('http') 
             ? project.image_url 
-            : `http://localhost:5000${project.image_url}`;
+            : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`;
         setImagePreview(imageUrl);
         console.log('Setting image preview:', imageUrl);
     } else {

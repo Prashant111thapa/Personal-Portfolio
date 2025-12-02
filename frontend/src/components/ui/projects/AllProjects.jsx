@@ -55,7 +55,7 @@ const AllProjects = () => {
             <ProjectCard 
               key={project.id}
               projectId={project.id}
-              imageURL={project?.image_url ? `http://localhost:5000${project.image_url}` : null}
+              imageURL={project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : null}
               projectTitle={project.title}
               description={project?.overview}
               githubLink={project?.github_url}
