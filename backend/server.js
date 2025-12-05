@@ -18,7 +18,23 @@ app.use(cookieParser());
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or Postman)
+        if (!origin) return callback(null, true);
+        
+        // Allow all Vercel preview deployments and production
+        if (origin.includes('vercel.app') || origin.includes('localhost')) {
+            return callback(null, true);
+        }
+        
+        // Check if origin matches environment variable
+        const allowedOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
+        if (allowedOrigins.some(allowedOrigin => allowedOrigin.trim() === origin)) {
+            return callback(null, true);
+        }
+        
+        return callback(new Error('Not allowed by CORS'), false);
+    },
     credentials: true
 }));
 
