@@ -22,11 +22,24 @@ const Header = () => {
 
     // Smooth scroll to section
     const scrollToSection = (sectionId) => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-            setIsMobileMenuOpen(false); // Close mobile menu after click
+        // If we're not on the homepage, navigate there first
+        if (window.location.pathname !== '/') {
+            navigate('/', { replace: true });
+            // Wait a bit for navigation, then scroll
+            setTimeout(() => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        } else {
+            // We're already on homepage, just scroll
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
         }
+        setIsMobileMenuOpen(false); // Close mobile menu after click
     }
 
     // Navigation links configuration
@@ -41,7 +54,7 @@ const Header = () => {
             ];
         } else {
             return [
-                { label: 'Home', path: 'home', type: 'scroll' },
+                { label: 'Home', path: '/', type: 'route' }, // Changed to route for better navigation
                 { label: 'About', path: 'about', type: 'scroll' },
                 { label: 'Skills', path: 'skills', type: 'scroll' },
                 { label: 'Projects', path: 'projects', type: 'scroll' },
@@ -66,15 +79,38 @@ const Header = () => {
                 </Link>
             );
         } else {
-            return (
-                <button 
-                    key={link.label}
-                    onClick={() => scrollToSection(link.path)}
-                    className={baseClasses}
-                >
-                    {link.label}
-                </button>
-            );
+            // Special handling for "Projects" link
+            if (link.label === 'Projects') {
+                return (
+                    <button 
+                        key={link.label}
+                        onClick={() => {
+                            // If on homepage, scroll to projects section
+                            if (window.location.pathname === '/') {
+                                scrollToSection(link.path);
+                            } else {
+                                // If on other pages, navigate to projects page
+                                navigate('/projects');
+                                setIsMobileMenuOpen(false);
+                            }
+                        }}
+                        className={baseClasses}
+                    >
+                        {link.label}
+                    </button>
+                );
+            } else {
+                // Regular scroll behavior for other sections
+                return (
+                    <button 
+                        key={link.label}
+                        onClick={() => scrollToSection(link.path)}
+                        className={baseClasses}
+                    >
+                        {link.label}
+                    </button>
+                );
+            }
         }
     }
 
