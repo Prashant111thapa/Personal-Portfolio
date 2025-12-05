@@ -13,7 +13,7 @@ router.post("/create",
 );
 
 router.get("/", ProjectController.getAllProject);
-router.get("/:id", validateToken, ProjectController.getProjectById);
+router.get("/:id", ProjectController.getProjectById);
 router.patch("/:id", 
     validateToken, 
     uploadProjectBanner.single('banner'), 

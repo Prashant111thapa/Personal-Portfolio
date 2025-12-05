@@ -1,11 +1,12 @@
-import React from 'react'
 import { useProfile } from '../../context/ProfileContext';
 import { motion } from 'framer-motion'
 import Button from '../shared/Button';
 import { ArrowRight, Github, Linkedin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
 
+  const navigate = useNavigate();
     const { profile } = useProfile();
     
   return (
@@ -73,16 +74,21 @@ const HeroSection = () => {
                 >
                     <Button
                         className='group'
+                        onClick={navigate("/projects")}
                     >
-                        View Projects
-                        <ArrowRight className='ml-2 group-hover:translate-x-1 transition-transform' size={20}/>
+                      View Projects
+                      <ArrowRight className='ml-2 group-hover:translate-x-1 transition-transform' size={20}/>
                     </Button>
-                    <Button
-                        variant='outline'
-                        className='border-2 border-[#FD6F00] text-[#FD6F00] hover:bg-[#FD6F00] hover:text-white px-6 py-6 text-base rounded-lg transition-all duration-300'
+                    <a
+                      href={profile?.resume_url ? (profile.resume_url.startsWith('http') ? profile.resume_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profile.resume_url}`) : '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`
+                        border-[#FD6F00] text-[#FD6F00] hover:bg-[#FD6F00] hover:text-white shadow-sm hover:shadow-[#FD6F00]/30
+                        cursor-pointer border-2 px-6 py-6 text-base rounded-lg transition-all duration-300 ${!profile?.resume_url ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        Contact Me
-                    </Button>
+                      View CV
+                    </a>
                 </motion.div>
 
                 {/* social links */}
