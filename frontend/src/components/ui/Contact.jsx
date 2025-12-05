@@ -5,10 +5,12 @@ import { useProfile } from '../../context/ProfileContext';
 import Input from '../shared/Input';
 import Button from '../shared/Button';
 import { Github, Linkedin, Mail, MapPin, PhoneCall, Send } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 
 const Contact = () => {
 
+  const { isAuthenticated } = useAuth();
   const { profile } = useProfile();
 
   const {    
@@ -178,6 +180,7 @@ const Contact = () => {
 
             <Button
               type="submit"
+              disabled={isAuthenticated}
               className="w-full bg-[#FD6F00] hover:bg-[#FD6F00]/90 text-white px-8 py-6 text-base rounded-lg group shadow-lg shadow-[#FD6F00]/20 hover:shadow-[#FD6F00]/40 transition-all duration-300"
             >
               Send Message
