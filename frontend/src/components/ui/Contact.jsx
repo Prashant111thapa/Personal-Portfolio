@@ -181,7 +181,9 @@ const Contact = () => {
             <Button
               type="submit"
               disabled={isAuthenticated}
-              className="w-full bg-[#FD6F00] hover:bg-[#FD6F00]/90 text-white px-8 py-6 text-base rounded-lg group shadow-lg shadow-[#FD6F00]/20 hover:shadow-[#FD6F00]/40 transition-all duration-300"
+              className={`w-full bg-[#FD6F00] hover:bg-[#FD6F00]/90 text-white px-8 py-6 text-base rounded-lg group shadow-lg shadow-[#FD6F00]/20 hover:shadow-[#FD6F00]/40 transition-all duration-300
+                  ${isAuthenticated ? "cursor-not-allowed" : ""}
+                `}
             >
               Send Message
               <Send className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
