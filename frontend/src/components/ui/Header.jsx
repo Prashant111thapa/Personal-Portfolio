@@ -41,7 +41,7 @@ const Header = () => {
             ];
         } else {
             return [
-                { label: 'Home', path: '/', type: 'route' },
+                { label: 'Home', path: 'home', type: 'scroll' },
                 { label: 'About', path: 'about', type: 'scroll' },
                 { label: 'Skills', path: 'skills', type: 'scroll' },
                 { label: 'Projects', path: 'projects', type: 'scroll' },
