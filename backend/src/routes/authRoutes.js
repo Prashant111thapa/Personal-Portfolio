@@ -13,7 +13,11 @@ router.patch("/user/:id", validateToken, validateUserUpdate, UserController.upda
 router.post("/email", UserController.getUserByEmail);
 router.get("/me", validateToken, UserController.getCurrentUser);
 router.post('/logout', (_req, res) => {
-    res.clearCookie('authToken');
+    res.clearCookie('authToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
     res.json({ success: true, message: "Logged out successfully" });
 });
 
