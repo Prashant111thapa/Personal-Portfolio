@@ -75,11 +75,18 @@ export const validateContactForm = (formData) => {
     }
 
     // Message validation
-    if (formData.message && formData.message.length > 1000) {
+    if (!formData.message?.trim()) {
+        errors.message = "Message is required";
+    } else if (formData.message.length < 10) {
+        errors.message = "Message must be at least 10 characters";
+    } else if (formData.message.length > 1000) {
         errors.message = "Message must not exceed 1000 characters";
     }
 
-    return errors;
+    return {
+        errors,
+        isValid: Object.keys(errors).length === 0
+    };
 };
 
 /**

@@ -171,8 +171,9 @@ const Contact = () => {
                 onChange={handleInputChange}
                 placeholder="Write your message here..."
                 rows={6}
-                className="p-4 rounded-md bg-[#1e1e1e] text-white border w-full border-[#FD6F00]/30 focus:outline-none focus:ring-2 focus:ring-[#FD6F00] max-h-30"
+                className={`p-4 rounded-md bg-[#1e1e1e] text-white border w-full border-[#FD6F00]/30 focus:outline-none focus:ring-2 focus:ring-[#FD6F00] max-h-30 ${errors.message ? 'border-2 border-red-500': ""}`}
               />
+              {errors.message ? <span className='text-sm text-red-500'>{errors.message}</span> : ""}
             </div>
 
             <Button

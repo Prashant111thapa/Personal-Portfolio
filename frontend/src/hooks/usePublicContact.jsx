@@ -16,7 +16,19 @@ const usePublicContact = () => {
     const [loading, setLoading] = useState(false);
 
     const handleInputChange = (e) => {
+        // Safety check for event and target
+        if (!e || !e.target) {
+            console.error('Invalid event object:', e);
+            return;
+        }
+        
         const { name, value } = e.target;
+        
+        // Safety check for name property
+        if (!name) {
+            console.error('Input element missing name attribute:', e.target);
+            return;
+        }
         
         // For normal typing, preserve spaces and only sanitize when needed
         const sanitizedValue = value
@@ -38,44 +50,50 @@ const usePublicContact = () => {
     }
 
     const createContact = async (e) => {
-        e.preventDefault();
-        
-        // Client-side validation
-        const validation = validateContactForm(formData);
-        setErrors(validation.errors);
-        
-        if (!validation.isValid) {
-            toast.error("Please correct the errors in the form");
-            return;
-        }
-
-        // Rate limiting check
-        const rateLimitCheck = checkRateLimit('contact_form');
-        if (!rateLimitCheck.allowed) {
-            const minutes = Math.ceil(rateLimitCheck.timeLeft / 60000);
-            toast.error(`Too many submissions. Please wait ${minutes} minute(s) before trying again.`);
-            return;
-        }
-
-        const sanitizedData = sanitizeFormData(formData);
-
-        setLoading(true);
         try {
-            const result = await ContactServices.createContact(sanitizedData);
-            if(result.success) {
-                toast.success("Thank you! I will contact you soon.");
-                setFormData({
-                    name: "",
-                    email: "",
-                    subject: "",
-                    message: ""
-                }); 
-                setErrors({});
+            e.preventDefault();
+            
+            // Client-side validation
+            const validation = validateContactForm(formData);
+            setErrors(validation.errors);
+            
+            if (!validation.isValid) {
+                toast.error("Please correct the errors in the form");
+                return;
             }
-        } catch(err) {
-            console.error("Error sending inquiry.", err);
-            toast.error("Failed to send message. Please try again later.");
-        } finally {
+
+            // Rate limiting check
+            const rateLimitCheck = checkRateLimit('contact_form');
+            if (!rateLimitCheck.allowed) {
+                const minutes = Math.ceil(rateLimitCheck.timeLeft / 60000);
+                toast.error(`Too many submissions. Please wait ${minutes} minute(s) before trying again.`);
+                return;
+            }
+
+            const sanitizedData = sanitizeFormData(formData);
+
+            setLoading(true);
+            try {
+                const result = await ContactServices.createContact(sanitizedData);
+                if(result.success) {
+                    toast.success("Thank you! I will contact you soon.");
+                    setFormData({
+                        name: "",
+                        email: "",
+                        subject: "",
+                        message: ""
+                    }); 
+                    setErrors({});
+                }
+            } catch(err) {
+                console.error("Error sending inquiry.", err);
+                toast.error("Failed to send message. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("Unexpected error in createContact:", error);
+            toast.error("An unexpected error occurred. Please try again.");
             setLoading(false);
         }
     }
