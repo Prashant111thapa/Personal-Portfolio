@@ -84,7 +84,7 @@ const App = () => {
              } />
 
              {/* Public Users */}
-             <Route path="projects" element={
+             <Route path="/projects" element={
               <ProfifleProvider>
                 <Layout>
                   <AllProjects />
@@ -92,7 +92,7 @@ const App = () => {
               </ProfifleProvider>
              } />
 
-             <Route path='project/:id' element={
+             <Route path='/project/:id' element={
               <ProfifleProvider>
                 <Layout>
                   <ProjectDetails />

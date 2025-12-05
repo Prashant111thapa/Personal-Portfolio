@@ -74,7 +74,7 @@ const HeroSection = () => {
                 >
                     <Button
                         className='group'
-                        onClick={navigate("/projects")}
+                        onClick={() => navigate("/projects")}
                     >
                       View Projects
                       <ArrowRight className='ml-2 group-hover:translate-x-1 transition-transform' size={20}/>
