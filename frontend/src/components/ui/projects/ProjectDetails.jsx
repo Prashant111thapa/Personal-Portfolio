@@ -55,7 +55,7 @@ const ProjectDetails = () => {
 
     if(loading) {
         return (
-          <div className='flex items-center min-h-screen'>
+          <div className='flex items-center justify-center min-h-screen'>
               <div className='border-2 border-[#FD6F00]/80 animate-spin w-8 h-8 rounded-full'></div>
               <p>Loading...</p>
           </div>
