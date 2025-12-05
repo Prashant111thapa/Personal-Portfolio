@@ -19,7 +19,20 @@ const ManageSkills = () => {
   const [currentSkillId, setCurrentSkillId] = useState(null);
 
   const handleInputChange = (e) => {
+    // Safety check for event and target
+    if (!e || !e.target) {
+      console.error('Invalid event object in ManageSkills:', e);
+      return;
+    }
+    
     const { name, value } = e.target;
+    
+    // Safety check for name property
+    if (!name) {
+      console.error('Input element missing name attribute in ManageSkills:', e.target);
+      return;
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value

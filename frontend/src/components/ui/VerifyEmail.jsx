@@ -22,7 +22,19 @@ const VerifyEmail = () => {
     const [view, setView] = useState("find-account");
 
     const handleInputChange = (e) => {
+      // Safety check for event and target
+      if (!e || !e.target) {
+        console.error('Invalid event object in VerifyEmail:', e);
+        return;
+      }
+      
       const { name, value } = e.target;
+      
+      // Safety check for name property
+      if (!name) {
+        console.error('Input element missing name attribute in VerifyEmail:', e.target);
+        return;
+      }
       setFormData(prev => ({
         ...prev,
         [name]: value

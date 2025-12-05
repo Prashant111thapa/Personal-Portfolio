@@ -24,7 +24,20 @@ const Login = () => {
     // }
 
     const handleInputChange = (e) => {
+        // Safety check for event and target
+        if (!e || !e.target) {
+            console.error('Invalid event object in login:', e);
+            return;
+        }
+        
         const { name, value } = e.target;
+        
+        // Safety check for name property
+        if (!name) {
+            console.error('Input element missing name attribute in login:', e.target);
+            return;
+        }
+        
         setUserData(prev => ({
             ...prev,
             [name]: value

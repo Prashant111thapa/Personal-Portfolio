@@ -1,10 +1,10 @@
 import React from 'react'
 import { useAuth } from '../../context/AuthContext'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Button from '../shared/Button';
 import { useProfile } from '../../context/ProfileContext';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 
 const Header = () => {
@@ -12,6 +12,7 @@ const Header = () => {
     const { profile } = useProfile();
     const { isAuthenticated, user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -21,9 +22,9 @@ const Header = () => {
     }
 
     // Smooth scroll to section
-    const scrollToSection = (sectionId) => {
+    const scrollToSection = useCallback((sectionId) => {
         // If we're not on the homepage, navigate there first
-        if (window.location.pathname !== '/') {
+        if (location.pathname !== '/') {
             navigate('/', { replace: true });
             // Wait a bit for navigation, then scroll
             setTimeout(() => {
@@ -40,7 +41,7 @@ const Header = () => {
             }
         }
         setIsMobileMenuOpen(false); // Close mobile menu after click
-    }
+    }, [location.pathname, navigate]);
 
     // Navigation links configuration
     const getNavLinks = (isAuthenticated) => {

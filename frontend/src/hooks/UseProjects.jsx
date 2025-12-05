@@ -65,7 +65,20 @@ const UseProjects = () => {
 
 // In UseProjects.jsx - Fix the handleInputChange function
 const handleInputChange = (e) => {
+    // Safety check for event and target
+    if (!e || !e.target) {
+        console.error('Invalid event object in UseProjects:', e);
+        return;
+    }
+    
     const { name, value } = e.target;
+    
+    // Safety check for name property
+    if (!name) {
+        console.error('Input element missing name attribute in UseProjects:', e.target);
+        return;
+    }
+    
     console.log('UseProjects - Input change:', name, '=', value);
     
     // Make sure this setState actually updates
