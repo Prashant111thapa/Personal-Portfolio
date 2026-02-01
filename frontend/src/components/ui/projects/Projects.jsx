@@ -40,13 +40,13 @@ const Projects = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.2 }}
                 >
-                                        <ProjectCard
-                                                projectId={project.id}
-                                                imageURL={
-                                                    project?.file_url
-                                                    ? (project.file_url.startsWith('http') ? project.file_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.file_url}`)
-                                                    : (project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : null)
-                                                }
+                        <ProjectCard
+                            projectId={project.id}
+                            imageURL={
+                                project?.file_url
+                                ? (project.file_url.startsWith('http') ? project.file_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.file_url}`)
+                                : (project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : null)
+                        }
                         projectTitle={project.title}
                         description={project?.overview}
                         githubLink={project?.github_url}

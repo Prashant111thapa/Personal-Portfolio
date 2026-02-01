@@ -46,7 +46,7 @@ const ProjectCard = ({
           <motion.img
             src={imageURL}
             alt={projectTitle}
-            onLoad={() => console.log('Image loaded successfully:', imageURL)}
+            // onLoad={() => console.log('Image loaded successfully:', imageURL)}
             onError={(e) => {
               // console.error('Image failed to load:', imageURL);
               // console.error('Error details:', e);
@@ -117,7 +117,7 @@ const ProjectCard = ({
 
           {/* Tech used */} 
           <div className='flex flex-wrap gap-2 mb-4'>
-            {techUsedArray.map((tech, idx) => (
+            {techUsedArray.slice(0, 3).map((tech, idx) => (
               <span
                 key={tech + idx}
                 className='text-xs px-3 py-1 rounded-full bg-[#FD6F00]/10 text-[#FD6F00] border border-[FD6F00]/20 font-medium'
@@ -125,6 +125,11 @@ const ProjectCard = ({
                 {tech}
               </span>
             ))}
+            {techUsedArray.length > 3 && (
+              <span className='text-xs px-3 py-1 rounded-full bg-[#FD6F00]/20 text-[#FD6F00] border border-[FD6F00]/30 font-medium'>
+                +{techUsedArray.length - 3} more
+              </span>
+            )}
           </div>
 
           {/* view details */}
