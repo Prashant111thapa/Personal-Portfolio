@@ -151,16 +151,22 @@ class UserController {
                 contentEncoding 
             } = await UserModel.viewResume(id);
 
-            // Force inline viewing, not download
-            res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
-            res.setHeader("Content-Type", contentType || "application/pdf");
+            res.setHeader(
+                "Content-Disposition",
+                `inline; filename="${filename}"`
+            );
             
-            // Add headers to prevent downloading
-            res.setHeader("Cache-Control", "public, max-age=3600");
-            res.setHeader("X-Content-Type-Options", "nosniff");
-            
-            if (contentLength) res.setHeader("Content-Length", contentLength);
-            if (contentEncoding) res.setHeader("Content-Encoding", contentEncoding);
+            if (contentType) {
+                res.setHeader("Content-Type", contentType);
+            }
+
+            if (contentLength) {
+                res.setHeader("Content-Length", contentLength);
+            }
+
+            if (contentEncoding) {
+                res.setHeader("Content-Encoding", contentEncoding);
+            }
 
             stream.pipe(res);
         } catch (err) {

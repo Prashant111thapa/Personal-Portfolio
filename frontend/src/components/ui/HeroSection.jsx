@@ -85,7 +85,7 @@ const HeroSection = () => {
                       <ArrowRight className='ml-2 group-hover:translate-x-1 transition-transform' size={20}/>
                     </Button>
                     <a
-                      href={profile?.resume_url && profile.resume_url.startsWith('http') ? profile.resume_url : (profile?.id ? AuthService.getResumeViewUrl(profile.id) : '#')}
+                      href={profile?.resume_url ? (profile.id ? AuthService.getResumeViewUrl(profile.id) : (profile.resume_url.startsWith('http') ? profile.resume_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profile.resume_url}`)) : '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`
