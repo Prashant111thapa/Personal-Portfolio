@@ -59,6 +59,12 @@ class AuthService{
         }
     }
 
+    static getResumeViewUrl(profileId) {
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+        // console.log("base", base);
+        return `${base}/api/auth/view/${profileId}`;
+    }
+
     static async updateProfile(profileInfo, profileId) {
         try {
             const response = await api.patch(`/auth/profile/${profileId}`, profileInfo);

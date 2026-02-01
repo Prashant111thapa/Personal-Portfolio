@@ -138,6 +138,33 @@ class UserController {
             return res.status(500).json({ success: false, message: "Internal Server Error" });
         }
     }
+
+    static viewResume = async (req, res, next) => {
+        const { id } = req.params;
+
+        try {
+            const { 
+                stream, 
+                filename, 
+                contentType, 
+                contentLength, 
+                contentEncoding 
+            } = await UserModel.viewResume(id);
+
+            res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+            if (contentType) res.setHeader("Content-Type", contentType || "application/pdf");
+            if (contentLength) res.setHeader("Content-Length", contentLength);
+            if (contentEncoding) res.setHeader("Content-Encoding", contentEncoding);
+
+            stream.pipe(res);
+        } catch (err) {
+            console.error('Error streaming resume:', err);
+            if (err.message && err.message.toLowerCase().includes('not found')) {
+                return res.status(404).json({ success: false, message: err.message });
+            }
+            return res.status(500).json({ success: false, message: 'Failed to retrieve resume' });
+        }
+    };
     
 }
 

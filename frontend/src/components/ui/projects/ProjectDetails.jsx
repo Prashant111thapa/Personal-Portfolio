@@ -28,8 +28,7 @@ const ProjectDetails = () => {
     }
 
     useEffect(() => {
-        console.log("Project Id", id);
-        fetchProject();
+      fetchProject();
     }, [id]);
 
     const techUsed = project?.tech_used;
@@ -51,7 +50,15 @@ const ProjectDetails = () => {
           ? features
       : [];
 
-    console.log("details tech used", techStack);
+    const imageSrc = project?.file_url
+      ? (project.file_url.startsWith('http')
+        ? project.file_url
+        : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.file_url}`)
+      : (project?.image_url
+        ? (project.image_url.startsWith('http')
+          ? project.image_url
+          : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`)
+        : null);
 
     if(loading) {
         return (
@@ -68,14 +75,16 @@ const ProjectDetails = () => {
     <div className='min-h-screen p-6 text-[#E0E0E0]'>
       {/* Image and titles */}
       <div className='relative h-[60vh] overflow-hidden'>
-        <motion.img 
-            src={project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : ''}
+        {imageSrc ? (
+          <motion.img
+            src={imageSrc}
             alt={project?.title}
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.8 }}
             className='w-full h-full object-cover'
-        />
+          />
+        ) : null}
         <div className='absolute inset-0 bg-linear-to-b from-[#121212]/70 via-[#121212]/50 to-[#121212]'></div>
       
         {/* overlay */}

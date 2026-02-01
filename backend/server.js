@@ -9,6 +9,7 @@ import authRoutes from './src/routes/authRoutes.js';
 import skillsRoutes from './src/routes/skillsRoutes.js';
 import projectRoutes from './src/routes/projectRoutes.js';
 import contactRoutes from './src/routes/contactRoutes.js';
+import { testCloudinaryConnection } from './src/config/cloudinary.config.js';
 
 dotenv.config();
 const app = express();
@@ -39,14 +40,21 @@ app.use(cors({
 }));
 
 // Serve uploaded files statically
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, 'src', 'uploads')));
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+// app.use('/uploads', express.static(path.join(__dirname, 'src', 'uploads')));
+
 
 app.get('/health', (_req, res) => {
     console.log("Server is running.");
     res.status(200).json({ success: true, message: "Server is running..." });
 });
+
+    try {
+        await testCloudinaryConnection();
+    } catch (err) {
+        console.error("Error connecting to clodinary", err);
+    }
 
 app.use('/api/auth', authRoutes);
 app.use('/api/skill', skillsRoutes);

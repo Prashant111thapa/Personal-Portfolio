@@ -42,7 +42,6 @@ const UseProjects = () => {
             setProjectCount(0);
         }
     } catch (err) {
-        console.log("failed to load projects", err);
         toast.error("Failed to load projects");
         setProjects([]);
         setProjectCount(0);
@@ -67,7 +66,6 @@ const UseProjects = () => {
 const handleInputChange = (e) => {
     // Safety check for event and target
     if (!e || !e.target) {
-        console.error('Invalid event object in UseProjects:', e);
         return;
     }
     
@@ -75,11 +73,10 @@ const handleInputChange = (e) => {
     
     // Safety check for name property
     if (!name) {
-        console.error('Input element missing name attribute in UseProjects:', e.target);
         return;
     }
     
-    console.log('UseProjects - Input change:', name, '=', value);
+    // console.log('UseProjects - Input change:', name, '=', value);
     
     // Make sure this setState actually updates
     setFormData(prevFormData => {
@@ -87,7 +84,7 @@ const handleInputChange = (e) => {
             ...prevFormData,
             [name]: value
         };
-        console.log('UseProjects - New formData:', newFormData);
+        // console.log('UseProjects - New formData:', newFormData);
         return newFormData;
     });
     
@@ -149,7 +146,6 @@ const handleInputChange = (e) => {
  }
 
  const createProject = async (e) => {
-    console.log("clicked");
     e.preventDefault();
 
     if(!validate()){
@@ -185,7 +181,7 @@ const handleInputChange = (e) => {
             return false;
         }
     } catch (err) {
-        console.error("Error creating project", err);
+        // console.error("Error creating project", err);
         toast.error("Error creating project");
         return false;
     } finally {
@@ -211,16 +207,11 @@ const handleInputChange = (e) => {
         // Create FormData to handle both text data and image
         const formDataToSend = new FormData();
         
-        // console.log('=== UPDATE PROJECT FRONTEND DEBUG ===');
-        // console.log('FormData before processing:', formData);
-        // console.log('Current project ID:', currentProjectId);
-        // console.log('Selected image:', selectedImage);
-        
         // Append all text fields (including empty strings for status, etc.)
         Object.keys(formData).forEach(key => {
             if(key !== 'image_url' && formData[key] !== undefined && formData[key] !== null) {
                 formDataToSend.append(key, formData[key]);
-                console.log(`Added to FormData: ${key} = '${formData[key]}'`);
+                // console.log(`Added to FormData: ${key} = '${formData[key]}'`);
             }
         });
         
@@ -230,25 +221,67 @@ const handleInputChange = (e) => {
         }
         
         const result = await ProjectServices.updateProject(currentProjectId, formDataToSend);
-        console.log('Update result:', result);
         if(result.success) {
             toast.success("Project updated successfully.");
             await loadProjects();
             resetForm();
             return true;
         } else {
-            console.log('Update failed:', result);
             toast.error(result.message || "Failed to update project");
             return false;
         }
     } catch (err) {
-        console.error("Error updating project", err);
-        console.error("Error details:", {
-            message: err.message,
-            response: err.response,
-            request: err.request
-        });
         toast.error("Error updating project");
+        return false;
+    } finally {
+        setLoading(false);
+    }
+ }
+
+ const uploadProjectBanner = async () => {
+    if (!selectedImage) {
+        toast.error("Please select an image first.");
+        return false;
+    }
+
+    if (!currentProjectId) {
+        toast.error("Please select a project first.");
+        return false;
+    }
+
+    setLoading(true);
+    try {
+        // Use the existing updateProject endpoint instead of dedicated upload
+        const formDataToSend = new FormData();
+        
+        // Add current form data to maintain existing project details
+        Object.keys(formData).forEach(key => {
+            if(key !== 'image_url' && formData[key] !== undefined && formData[key] !== null) {
+                formDataToSend.append(key, formData[key]);
+            }
+        });
+        
+        // Add the banner file
+        formDataToSend.append('banner', selectedImage);
+        
+        const result = await ProjectServices.updateProject(currentProjectId, formDataToSend);
+        if (result.success) {
+            toast.success("Project banner uploaded successfully.");
+            await loadProjects();
+            // Clear selected image after successful upload
+            setSelectedImage(null);
+            setImagePreview(null);
+            // Clear file input
+            const input = document.getElementById('project-banner');
+            if (input) input.value = '';
+            return true;
+        } else {
+            toast.error(result.message || "Failed to upload project banner");
+            return false;
+        }
+    } catch (err) {
+        console.error("Upload error:", err);
+        toast.error("Error uploading project banner");
         return false;
     } finally {
         setLoading(false);
@@ -268,7 +301,6 @@ const handleInputChange = (e) => {
             toast.error(result.message || "Failed to delete project");
         }
     } catch(err) {
-        console.error("Error deleting project", err);
         toast.error("Error deleting project");
     } finally {
         setLoading(false);
@@ -287,16 +319,23 @@ const handleInputChange = (e) => {
         features: project.features || '',
         overview: project.overview || '',
         category: project.category || '',
-        image_url: project.image_url || ''
+        image_url: project.file_url || project.image_url || '',
+        // Store both for compatibility
+        file_url: project.file_url || ''
     });
     
-    // Set image preview for existing image
-    if (project.image_url) {
-        const imageUrl = project.image_url.startsWith('http') 
-            ? project.image_url 
-            : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`;
-        setImagePreview(imageUrl);
-        console.log('Setting image preview:', imageUrl);
+    // Set image preview for existing image (prefer Cloudinary URL)
+    const previewUrl = project.file_url || project.image_url;
+    if (previewUrl) {
+        // If it's already a full URL (Cloudinary), use it directly
+        if (previewUrl.startsWith('http')) {
+            setImagePreview(previewUrl);
+        } else {
+            // If it's a relative path, construct the full URL
+            const imageUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${previewUrl}`;
+            setImagePreview(imageUrl);
+        }
+        console.log('Setting image preview:', previewUrl);
     } else {
         setImagePreview(null);
     }
@@ -344,6 +383,7 @@ const handleInputChange = (e) => {
     handleUpdateClick,
     createProject,
     updateProject,
+    uploadProjectBanner,
     isUpdate,
     loadProjects,
     resetForm

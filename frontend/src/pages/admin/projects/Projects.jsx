@@ -18,6 +18,7 @@ const Projects = () => {
     imagePreview,
     createProject, 
     updateProject, 
+    uploadProjectBanner,
     deleteProject,
     isUpdate, 
     handleRemoveImage,
@@ -26,9 +27,6 @@ const Projects = () => {
     loadProjects,
     resetForm
   } = UseProjects();
-  
-  console.log('Projects.jsx - Passing formData to form:', formData);
-  console.log('Projects data:', projects);
 
   const handleAddProject = () => {
     resetForm(); // Reset form data for new project
@@ -108,6 +106,7 @@ const Projects = () => {
             imagePreview={imagePreview}
             createProject={handleFormSubmit}
             updateProject={handleFormSubmit}
+            uploadProjectBanner={uploadProjectBanner}
             isUpdate={isUpdate}
           />
         </div>
@@ -179,9 +178,9 @@ const Projects = () => {
                     </td>
                     <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {project.image_url && (
+                        {(project.file_url || project.image_url) && (
                           <img 
-                            src={project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`}
+                            src={(project.file_url || project.image_url).startsWith('http') ? (project.file_url || project.image_url) : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${(project.file_url || project.image_url)}`}
                             alt={project.title}
                             className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg object-cover mr-2 sm:mr-3"
                             onError={(e) => { e.target.style.display = 'none'; }}

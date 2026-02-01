@@ -14,6 +14,7 @@ const ProjectForm = ({
     imagePreview,
     createProject,
     updateProject,
+    uploadProjectBanner,
     isUpdate = false,
 }) => {
 
@@ -31,19 +32,25 @@ const ProjectForm = ({
     };
 
     const getImageToShow = () => {
-        console.log('Image Debug:', { 
-            imagePreview, 
-            isUpdate, 
-            imageUrl: safeFormData.image_url, 
-            selectedImage 
-        });
+        // console.log('Image Debug:', { 
+        //     imagePreview, 
+        //     isUpdate, 
+        //     imageUrl: safeFormData.image_url, 
+        //     fileUrl: safeFormData.file_url,
+        //     selectedImage 
+        // });
         
         if (imagePreview) return imagePreview;
-        if (isUpdate && safeFormData.image_url) {
-            // Make sure to use full URL for existing images
-            return safeFormData.image_url.startsWith('http') 
-                ? safeFormData.image_url 
-                : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${safeFormData.image_url}`;
+        
+        // Prefer file_url (Cloudinary) if present, otherwise fallback to image_url
+        const existing = safeFormData.file_url || safeFormData.image_url;
+        if (isUpdate && existing) {
+            // If it's already a full URL (Cloudinary), use it directly
+            if (existing.startsWith('http')) {
+                return existing;
+            }
+            // If it's a relative path, construct the full URL
+            return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${existing}`;
         }
         return null;
     };
@@ -207,6 +214,18 @@ const ProjectForm = ({
                     >
                         {getImageToShow() ? 'Change Image' : 'Select Image'}
                     </button>
+
+                    {/* Separate Upload Banner Button for Updates */}
+                    {isUpdate && selectedImage && (
+                        <button
+                            type='button'
+                            onClick={uploadProjectBanner}
+                            disabled={loading}
+                            className='px-4 py-2 bg-green-600/20 hover:bg-green-600/30 text-green-500 rounded-md transition-colors border border-green-500/30 disabled:opacity-50'
+                        >
+                            {loading ? 'Uploading...' : 'Upload Banner to Cloudinary'}
+                        </button>
+                    )}
                 </div>
 
                 <input

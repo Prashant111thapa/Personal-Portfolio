@@ -33,7 +33,6 @@ const useContact = () => {
                 setContactCount(0);
             }
         } catch (err) {
-            console.log("Error fetching contact messages", err);
             // Only show toast error if user is authenticated (meaning they expect to see contact messages)
             if (isAuthenticated) {
                 toast.error("Error loading contact messages");
@@ -73,11 +72,9 @@ const useContact = () => {
                 toast.success("Contact marked as read");
                 setContactStatus("read");
                 await fetchContactMsg();
-                console.log("contact id: ", contactId);
                 // setCurrentContactId(null);
             } 
         } catch(err) {
-            console.error("Error marking contact as read");
             toast.error("Failed to mark contact read.");
         } finally {
             setLoading(false);
@@ -105,7 +102,6 @@ const useContact = () => {
                 toast.error("No contacts found with selected status");
             }
         } catch (err) {
-            console.error("Error finding contact by status", err);
             toast.error("Failed to filter contacts by status");
             setContacts([]);
             setContactCount(0);
@@ -127,7 +123,6 @@ const useContact = () => {
                 await fetchContactMsg();
             }
         } catch(err) {
-            console.error("Error deleting contact");
             toast.error("Failed to delete contact.");
         } finally {
             setLoading(false);

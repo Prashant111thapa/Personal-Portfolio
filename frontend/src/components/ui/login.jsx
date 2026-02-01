@@ -77,7 +77,6 @@ const Login = () => {
             const user = result.user;
             navigate("/dashboard");
         } catch(err){
-            console.log("Login failed, ", err);
             setError("Login failed. Please try again!");
         }   
     }

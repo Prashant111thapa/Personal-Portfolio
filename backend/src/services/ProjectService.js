@@ -10,7 +10,7 @@ class ProjectService {
         if(projectData.overview) sanitized.overview = projectData.overview.toString().trim().replace(/\s+/g, ' ');
         if(projectData.category) sanitized.category = projectData.category.toString().trim().replace(/\s+/g, ' ');
         if(projectData.status) sanitized.status = projectData.status.toString().trim();
-        if(projectData.image_url) sanitized.image_url = projectData.image_url.toString().trim();
+        // if(projectData.image_url) sanitized.image_url = projectData.image_url.toString().trim();
 
         return sanitized;
     }

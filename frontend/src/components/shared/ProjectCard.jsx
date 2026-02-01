@@ -14,8 +14,6 @@ const ProjectCard = ({
     page
 }) => {
 
-  console.log("Page", page);
-
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -32,8 +30,6 @@ const ProjectCard = ({
     : Array.isArray(techUsed)
     ? techUsed
     : [];
-
-    console.log("card tech used: ", techUsedArray);
 
   return (
     <div 
@@ -52,8 +48,8 @@ const ProjectCard = ({
             alt={projectTitle}
             onLoad={() => console.log('Image loaded successfully:', imageURL)}
             onError={(e) => {
-              console.error('Image failed to load:', imageURL);
-              console.error('Error details:', e);
+              // console.error('Image failed to load:', imageURL);
+              // console.error('Error details:', e);
               e.target.style.display = 'none';
               e.target.nextSibling.style.display = 'flex';
             }}
@@ -116,7 +112,7 @@ const ProjectCard = ({
             {projectTitle}
           </h3>
           <p className='text-[#B0B0B0] text-lg leading-relaxed mb-4 flex-1'>
-            {description}
+            {description.length > 50 ? description.slice(0, 50) + "..." : description}
           </p>
 
           {/* Tech used */} 

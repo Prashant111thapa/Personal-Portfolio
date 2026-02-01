@@ -4,6 +4,17 @@ import ProjectService from "../services/ProjectService.js";
 class ProjectController {
 
     static async createProject(req, res) {
+        console.log("=== PROJECT CONTROLLER createProject called ===");
+        console.log("Headers:", req.headers['content-type']);
+        console.log("Body:", req.body);
+        console.log("File:", req.file ? {
+            fieldname: req.file.fieldname,
+            originalname: req.file.originalname,
+            size: req.file.size,
+            mimetype: req.file.mimetype
+        } : 'No file received');
+        console.log("================================================");
+
         try {
             const {
                 title, tech_used, features, github_url,
@@ -14,10 +25,7 @@ class ProjectController {
             if(!tech_used) return res.status(400).json({ success: false, message: "Please mention tech used."});
             if(!features) return res.status(400).json({ success: false, message: "Feature is requried."});
 
-            let bannerPath = null;
-            if(req.file) {
-                bannerPath = `/uploads/project/${req.file.filename}`;
-            }
+            const bannerFile = req.file || null;
 
             const projectData = {
                 title, tech_used, features, github_url,
@@ -26,8 +34,8 @@ class ProjectController {
 
             const sanitized = ProjectService.sanitizeProjectInput(projectData);
 
-            const result = await ProjectModel.createProject(sanitized, bannerPath);
-            if(!result.success) {
+            const result = await ProjectModel.createProject(sanitized, bannerFile);
+            if(!result) {
                 return res.status(400).json({ status: false, message: "Failed to create project."});
             }
 
@@ -125,32 +133,42 @@ class ProjectController {
             }
 
             // Check if new banner image is uploaded
-            let bannerPath = null;
-            if(req.file) {
-                bannerPath = `/uploads/project/${req.file.filename}`;
+            const bannerFile = req.file || null;
+            console.log("Banner file: ", bannerFile);
+            console.log("CRITICAL: Banner file received?", bannerFile ? 'YES' : 'NO');
+            if (bannerFile) {
+                console.log("CRITICAL: Banner details:", {
+                    fieldname: bannerFile.fieldname,
+                    originalname: bannerFile.originalname,
+                    size: bannerFile.size,
+                    mimetype: bannerFile.mimetype
+                });
+            } else {
+                console.log("CRITICAL: No banner file - should NOT set image_url!");
             }
-
             const projectData = {
                 title, tech_used, features, github_url,
                 preview_url, overview, category, status
             };
 
-            // Add image_url only if new image is uploaded
-            if(bannerPath) {
-                projectData.image_url = bannerPath;
-            }
+            // Add image_url only if new image is uploaded (model will handle cloud upload)
+            // if(bannerFile) {
+            //     projectData.image_url = null;
+            // }
 
             const sanitized = ProjectService.sanitizeProjectInput(projectData);
 
-            const result = await ProjectModel.updateProject(sanitized, projectId);
+            const result = await ProjectModel.updateProject(sanitized, projectId, bannerFile);
             if(!result) {
                 return res.status(400).json({ success: false, message: "Failed to update project." });
             }
 
+            console.log("CONTROLLER: Final result:", result ? 'Success' : 'Failed');
+
             return res.status(200).json({
                 success: true,
                 data: result,
-                message: "Project updated successfully."
+                message: `Project ${bannerFile ? 'and banner ' : ''}updated successfully.`
             });
 
         } catch(err) {
@@ -178,6 +196,43 @@ class ProjectController {
             });
         } catch(err) {
             console.error("Failed to delete project.");
+            return res.status(500).json({ success: false, message: "Internal Server Error"});
+        }
+    }
+
+    static async uploadBanner(req, res) {
+        try {
+            const projectId = req.params.id;
+            console.log("Project Id: ", projectId);
+        
+            
+            if(!projectId || isNaN(projectId) || projectId < 1) {
+                return res.status(400).json({ success: false, message: "Valid project id is required." });
+            }
+
+            const file = req.file;
+            if(!file) {
+                return res.status(400).json({ success: false, message: "No banner file uploaded" });
+            }
+            console.log("Req file in project banner:", req.file);
+
+            const updated = await ProjectModel.uploadProjectBanner(projectId, file);
+            if(!updated) {
+                return res.status(400).json({ success: false, message: "Failed to upload project banner" });
+            }
+            console.log("Updated", updated);
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    banner_url: updated.file_url,
+                    filename: updated.file_name,
+                    public_id: updated.file_public_id
+                },
+                message: "Project banner uploaded successfully"
+            });
+        } catch(err) {
+            console.error("Error uploading project banner:", err);
             return res.status(500).json({ success: false, message: "Internal Server Error"});
         }
     }

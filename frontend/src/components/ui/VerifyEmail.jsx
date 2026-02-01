@@ -108,7 +108,6 @@ const VerifyEmail = () => {
         return toast.error("Please enter a valid code.");
       }
     } catch(err) {
-      console.log("Error verifying code", err);
       toast.error("Invalid or expired code");
     } finally {
       setLoading(false);

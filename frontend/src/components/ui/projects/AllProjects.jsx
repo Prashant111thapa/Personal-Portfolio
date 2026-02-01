@@ -55,7 +55,11 @@ const AllProjects = () => {
             <ProjectCard 
               key={project.id}
               projectId={project.id}
-              imageURL={project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : null}
+              imageURL={
+                project?.file_url
+                  ? (project.file_url.startsWith('http') ? project.file_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.file_url}`)
+                  : (project?.image_url ? (project.image_url.startsWith('http') ? project.image_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${project.image_url}`) : null)
+              }
               projectTitle={project.title}
               description={project?.overview}
               githubLink={project?.github_url}

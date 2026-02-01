@@ -54,29 +54,27 @@ class ProfileController {
 
     static async uploadAvatar(req, res) {
         try{
-            if(!req.file){
-                return res.status(400).json({
-                    success: false,
-                    message: "No file uploaded"
-                });
+            console.log("uploadd......");
+            console.log('Content-Type:', req.headers['content-type']);
+            // multer may populate `req.file` (single) or `req.files` (fields)
+            const file = req.file || (req.files && (req.files.file && req.files.file[0]) ) || (req.files && (req.files.avatar && req.files.avatar[0]));
+            console.log("file", file);
+            if(!file){
+                return res.status(400).json({ success: false, message: "No file uploaded" });
             }
 
-            const avatarPath = `/uploads/profile/${req.file.filename}`;
+            const updated = await UserModel.updateProfileAvatar(file);
 
-            const updatedProfile = await UserModel.updateProfileAvatar(avatarPath);
-
-            if(!updatedProfile) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Failed to update avatar"
-                });
+            if(!updated) {
+                return res.status(400).json({ success: false, message: "Failed to upload avatar" });
             }
 
             return res.status(200).json({
                 success: true,
                 data: {
-                    avatar_url: avatarPath,
-                    filename: req.file.filename
+                    avatar: updated.file_url,
+                    filename: updated.file_name,
+                    public_id: updated.public_id
                 },
                 message: "Avatar uploaded successfully"
             });
@@ -91,28 +89,23 @@ class ProfileController {
 
     static async uploadResume(req, res){
         try{
-            if(!req.file) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Resume is required"
-                });
+            const file = req.file || (req.files && (req.files.file && req.files.file[0])) || (req.files && (req.files.resume && req.files.resume[0]));
+            if(!file) {
+                return res.status(400).json({ success: false, message: "Resume is required" });
             }
 
-            const resumePath = `/uploads/resume/${req.file.filename}`;
-            const updatedResume = await UserModel.updateResume(resumePath);
+            const uploaded = await UserModel.updateResume(file);
 
-            if(!updatedResume) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Failed to update resume"
-                });
+            if(!uploaded) {
+                return res.status(400).json({ success: false, message: "Failed to upload resume" });
             }
 
             return res.status(200).json({
                 success: true,
                 data: {
-                    resume_url: resumePath,
-                    filename: req.file.filename
+                    resume_url: uploaded.file_url,
+                    filename: uploaded.file_name,
+                    public_id: uploaded.public_id
                 },
                 message: "Resume uploaded successfully."
             });

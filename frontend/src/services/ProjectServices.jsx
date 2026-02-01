@@ -40,12 +40,16 @@ class ProjectServices {
         try {
             // Check if projectData is FormData (for file uploads)
             const isFormData = projectData instanceof FormData;
+            console.log("is formdata", isFormData);
+            console.log("Project id: ", projectId);
+            console.log("Project data frontend:  ", projectData);
             
             const response = await api.patch(`/project/${projectId}`, projectData, {
                 headers: isFormData ? {
                     'Content-Type': 'multipart/form-data'
                 } : {}
             });
+            console.log("resposne: ", response.data);
             return response.data;
         } catch(err) {
             throw this.handleError(err);
@@ -60,7 +64,20 @@ class ProjectServices {
             throw this.handleError(err);
         }
     }
-
+    static async uploadProjectBanner(projectId, bannerFile) {
+        try {
+            const formData = new FormData();
+            formData.append('banner', bannerFile);
+            const response = await api.post(
+                `/project/upload-banner/${projectId}`,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
+            return response.data;
+        } catch(err) {
+            throw this.handleError(err);
+        }
+    }
     static handleError(err) {
         if(err.response) {
             return {

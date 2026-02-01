@@ -24,7 +24,7 @@ class AuthService{
             // Read the secret at call-time to avoid ESM import-order issues
             return jwt.verify(token, process.env.JWT_SECRET);
         } catch (err) {
-            console.error("Token verification failed.", err);
+            // console.error("Token verification failed.", err);
             return null;
         }
     }
@@ -153,6 +153,8 @@ class AuthService{
         }
         return { success: true };
     }
+
+
 
 }
 

@@ -1,4 +1,5 @@
 import { useProfile } from '../../context/ProfileContext';
+import AuthService from '../../services/AuthServices.jsx';
 import { motion } from 'framer-motion'
 import Button from '../shared/Button';
 import { ArrowRight, Github, Linkedin } from 'lucide-react';
@@ -8,7 +9,11 @@ const HeroSection = () => {
 
   const navigate = useNavigate();
     const { profile } = useProfile();
-    
+    // href={profile?.resume_url ? (profile.id ? AuthService.getResumeViewUrl(profile.id) : (profile.resume_url.startsWith('http') ? profile.resume_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profile.resume_url}`)) : '#'}
+
+    // console.log("image url", profile?.avatar_url);
+    // console.log("resume url: ", profile?.resume_url);
+    // console.log("bla", AuthService.getResumeViewUrl(profile.id));
   return (
     <section id="home" className='flex items-center justify-center px-6 sm:px-8 lg:px-12 pt-20'>
     <div className='w-full items-start'>
@@ -80,7 +85,7 @@ const HeroSection = () => {
                       <ArrowRight className='ml-2 group-hover:translate-x-1 transition-transform' size={20}/>
                     </Button>
                     <a
-                      href={profile?.resume_url ? (profile.resume_url.startsWith('http') ? profile.resume_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profile.resume_url}`) : '#'}
+                      href={profile?.resume_url ? (profile.id ? AuthService.getResumeViewUrl(profile.id) : (profile.resume_url.startsWith('http') ? profile.resume_url : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}${profile.resume_url}`)) : '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`
@@ -171,7 +176,7 @@ const HeroSection = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                     onError={(e) => {
-                      console.log('Profile image failed to load');
+                      console.log('Profile image failed to load', e);
                       e.target.style.display = 'none';
                     }}
                   />

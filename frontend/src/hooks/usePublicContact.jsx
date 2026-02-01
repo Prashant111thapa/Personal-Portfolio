@@ -18,7 +18,7 @@ const usePublicContact = () => {
     const handleInputChange = (e) => {
         // Safety check for event and target
         if (!e || !e.target) {
-            console.error('Invalid event object:', e);
+            // console.error('Invalid event object:', e);
             return;
         }
         
@@ -26,7 +26,7 @@ const usePublicContact = () => {
         
         // Safety check for name property
         if (!name) {
-            console.error('Input element missing name attribute:', e.target);
+            // console.error('Input element missing name attribute:', e.target);
             return;
         }
         
@@ -86,13 +86,11 @@ const usePublicContact = () => {
                     setErrors({});
                 }
             } catch(err) {
-                console.error("Error sending inquiry.", err);
                 toast.error("Failed to send message. Please try again later.");
             } finally {
                 setLoading(false);
             }
         } catch (error) {
-            console.error("Unexpected error in createContact:", error);
             toast.error("An unexpected error occurred. Please try again.");
             setLoading(false);
         }

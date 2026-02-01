@@ -1,4 +1,6 @@
 import dbConnection from "../../database/db.js";
+import axios from 'axios';
+import { uploadProfile, uploadResumeFile, deleteProfile, deleteResumeFile } from "../utils/cloudinary.utils.js";
 
 class UserModel {
     
@@ -61,44 +63,81 @@ class UserModel {
         }
     }
 
-    static updateResume = async (resumePath) => {
+    static updateResume = async (file) => {
         try{
-            // const checkQuery = 'SELECT id FROM profile WHERE id=1';
-            const checkQuery = 'SELECT 1 FROM profile LIMIT 1';
-            const [existingProfile] = await dbConnection.execute(checkQuery);
+            const checkQuery = 'SELECT * FROM profile LIMIT 1';
+            const [existingProfileRows] = await dbConnection.execute(checkQuery);
 
-            if(existingProfile.length === 0) {
+            if(existingProfileRows.length === 0) {
                 throw new Error("Profile not found. Please create profile first.")
             }
 
-            const query = 'UPDATE profile SET resume_url=?, updated_at = NOW() LIMIT 1';
-            const [result] = await dbConnection.execute(query, [resumePath]);
+            const profile = existingProfileRows[0];
 
+            // upload to cloudinary
+            const uploaded = await uploadReumeFile(file.buffer, file.originalname);
 
+            // update DB with secure URL and metadata
+            const query = `UPDATE profile SET resume_url=?, resume_public_id=?, resume_file_name=?, resume_file_size=?, updated_at = NOW() LIMIT 1`;
+            const [result] = await dbConnection.execute(query, [
+                uploaded.file_url,
+                uploaded.public_id,
+                uploaded.file_name,
+                uploaded.file_size
+            ]);
 
-            return result.affectedRows > 0 ? resumePath : null;
+            return result.affectedRows > 0 ? uploaded : null;
 
         } catch(err) {
             throw err;
         }
     }
     
-    static updateProfileAvatar = async (avatarPath) => {
+    static updateProfileAvatar = async (file) => {
         try{
+            console.log("DEBUG: updateProfileAvatar called with file:", file.originalname);
+            const checkQuery = 'SELECT * FROM profile LIMIT 1';
+            const [existingProfileRows] = await dbConnection.execute(checkQuery);
 
-            // const checkQuery = 'SELECT id FROM profile WHERE id=1';
-            const checkQuery = 'SELECT 1 FROM profile LIMIT 1';
-            const [existingProfile] = await dbConnection.execute(checkQuery);
-
-            if(existingProfile.length === 0) {
+            if(existingProfileRows.length === 0) {
                 throw new Error('Profile not found. Please create profile first.');
             }
 
-            const query = 'UPDATE profile SET avatar_url=?, updated_at=NOW() LIMIT 1';
-            const [result] = await dbConnection.execute(query, [avatarPath]);
+            const profile = existingProfileRows[0];
+            console.log("DEBUG: Found profile:", profile.id);
 
-            return result.affectedRows > 0 ? avatarPath : null;
+            // Upload to Cloudinary
+            console.log("DEBUG: Uploading to Cloudinary...");
+            const uploaded = await uploadProfile(file.buffer, file.originalname);
+            console.log("DEBUG: Cloudinary upload result:", uploaded);
+
+            // Optionally delete previous cloud file if we had stored public_id
+            if (profile.avatar_public_id) {
+                console.log("DEBUG: Deleting old avatar from Cloudinary:", profile.avatar_public_id);
+                try { await deleteProfile(profile.avatar_public_id); } catch(e) { /* ignore delete errors */ }
+            }
+
+            // Update DB with secure URL and metadata
+            console.log("DEBUG: Updating database with Cloudinary metadata...");
+            const query = `UPDATE profile SET avatar_url=?, avatar_public_id=?, avatar_file_name=?, avatar_file_size=?, updated_at=NOW() LIMIT 1`;
+            const [result] = await dbConnection.execute(query, [
+                uploaded.file_url,
+                uploaded.public_id,
+                uploaded.file_name,
+                uploaded.file_size
+            ]);
+            
+            console.log("DEBUG: Database update result:", result);
+            console.log("DEBUG: Updated values:", {
+                avatar_url: uploaded.file_url,
+                public_id: uploaded.public_id,
+                file_name: uploaded.file_name,
+                file_size: uploaded.file_size
+            });
+
+            return result.affectedRows > 0 ? uploaded : null;
         } catch (err) {
+            console.error("DEBUG: Error in updateProfileAvatar:", err);
             throw err;
         }
     }
@@ -163,6 +202,34 @@ class UserModel {
             return rows[0];
         } catch (err) {
             throw err;
+        }
+    }
+
+    static viewResume = async (profile_id) => {
+        const profile = await this.getProfileById(profile_id);
+        
+        if (!profile || !profile.resume_url) {
+            throw new Error("File not found for this profile");
+        }
+
+        const cloudinaryUrl = profile.resume_url;
+        const filename = profile.resume_file_name || `profile-${profile_id}.pdf`;
+
+        try {
+            const response = await axios.get(cloudinaryUrl, {
+                responseType: "stream",
+            });
+
+            return {
+                stream: response.data,
+                filename: filename,
+                contentType: response.headers["content-type"],
+                contentLength: response.headers["content-length"],
+                contentEncoding: response.headers["content-encoding"]
+            };
+        } catch (error) {
+            console.error('Download stream error:', error);
+            throw new Error("Failed to retrieve file from storage");
         }
     }
 
