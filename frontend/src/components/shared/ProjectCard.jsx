@@ -31,6 +31,8 @@ const ProjectCard = ({
     ? techUsed
     : [];
 
+  const safeDescription = typeof description === 'string' ? description : '';
+
   return (
     <div 
       className={`relative overflow-hidden group bg-[#1a1a1a] border-3 border-[#FD6F00]/10 rounded-2xl hover:border-[#FD6F00]/40 transition-all duration-300 h-full flex flex-col hover:-translate-y-2
@@ -112,7 +114,7 @@ const ProjectCard = ({
             {projectTitle}
           </h3>
           <p className='text-[#B0B0B0] text-lg leading-relaxed mb-4 flex-1'>
-            {description.length > 50 ? description.slice(0, 50) + "..." : description}
+            {safeDescription.length > 50 ? safeDescription.slice(0, 50) + "..." : safeDescription || 'No description available.'}
           </p>
 
           {/* Tech used */} 

@@ -193,6 +193,11 @@ const Projects = () => {
                               {project.overview.substring(0, 30)}{project.overview.length > 30 ? '...' : ''}
                             </div>
                           )}
+                          {!project.overview && (
+                            <div className="text-xs text-gray-500 truncate max-w-[100px] sm:max-w-xs">
+                              No overview
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
