@@ -75,7 +75,7 @@ class UserModel {
             const profile = existingProfileRows[0];
 
             // upload to cloudinary
-            const uploaded = await uploadReumeFile(file.buffer, file.originalname);
+            const uploaded = await uploadResumeFile(file.buffer, file.originalname);
 
             // update DB with secure URL and metadata
             const query = `UPDATE profile SET resume_url=?, resume_public_id=?, resume_file_name=?, resume_file_size=?, updated_at = NOW() LIMIT 1`;
