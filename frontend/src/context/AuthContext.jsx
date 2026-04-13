@@ -76,8 +76,7 @@ export const AuthProvider = ({ children }) => {
     if (loading) {
         return (
             <div className='min-h-screen flex flex-col items-center justify-center'>
-                <div className='rounded-full animate-spin w-12 h-12 border-3 border-[#FD6F00]/70'></div>
-                <div className="text-white text-lg">Loading...</div>
+                <div className="rounded-full animate-spin w-12 h-12 border-4 border-gray-700 border-t-[#FD6F00]"></div>                <div className="text-white text-lg">Loading...</div>
             </div>
         );
     }
